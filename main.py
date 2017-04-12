@@ -3,6 +3,9 @@ import socket
 import sys
 import os
 
+# default value for port
+PORT = 8000
+
 
 def open_socket():
     """Creates an open listening socket"""
@@ -11,16 +14,16 @@ def open_socket():
         port = int(port)
     except (IndexError, ValueError):
         print('No port was specified or invalid port, using standard')
-        port = 8000
+        port = PORT
 
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
         listen_socket.bind(('', port))
     except (PermissionError, OverflowError, OSError):
-        print('Unable to use specified port, using standard')
-        port = 8000
-        listen_socket.bind(('', port))
+        print('Unable to use specified port')
+        raise
+
     listen_socket.listen(1)
     print('Serving HTTP on port {port} ...'.format(port=port))
     return listen_socket
@@ -60,6 +63,7 @@ def add_styles(html_response):
 
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
+    os.chdir('/')
     listen_socket = open_socket()
     while True:
         client_connection, client_address = listen_socket.accept()
