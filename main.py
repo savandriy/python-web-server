@@ -3,23 +3,23 @@ import socket
 import sys
 import os
 
-# default value for port
 DEFAULT_PORT = 8000
+ADDRESS_FAMILY = socket.AF_INET
+SOCKET_TYPE = socket.SOCK_STREAM
+REQUEST_QUEUE_SIZE = 5
 
 
 def open_socket():
     """Creates an open listening socket"""
     port = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else DEFAULT_PORT
 
-    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listen_socket = socket.socket(ADDRESS_FAMILY, SOCKET_TYPE)
+    # Allow to reuse the same address
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    try:
-        listen_socket.bind(('', port))
-    except (PermissionError, OverflowError, OSError):
-        print('Unable to use specified port')
-        raise
-
-    listen_socket.listen(1)
+    # Bind
+    listen_socket.bind(('', port))
+    # Activate
+    listen_socket.listen(REQUEST_QUEUE_SIZE)
     print('Serving HTTP on port {port} ...'.format(port=port))
     return listen_socket
 
