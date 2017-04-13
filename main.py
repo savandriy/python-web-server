@@ -41,23 +41,26 @@ def add_headers(response_without_headers):
 def add_styles(html_response):
     """Add some styles to the HTML"""
     styles = """
-        <style>
-        body{
-            background: #000000; 
-            background: -webkit-linear-gradient(to left, #000000 , #434343); 
-            background: linear-gradient(to left, #000000 , #434343); 
-        }
-        ul{
-            font-size: 20px;
-        }
-        li, a{
-            color: white;
-        }
-        li:hover{
-            font-size: 25px;
-        }
-        </style>
-    """
+            <style>
+            body{
+                background: #000000; 
+                background: -webkit-linear-gradient(to left, #000000 , #434343); 
+                background: linear-gradient(to left, #000000 , #434343); 
+            }
+            ul{
+                font-size: 20px;
+            }
+            li, a{
+                color: white;
+            }
+            li{
+                transition: font-size 0.3s;
+            }
+            li:hover{
+                font-size: 25px;
+            }
+            </style>
+        """
     return html_response + styles
 
 
