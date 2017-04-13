@@ -76,10 +76,7 @@ def serve():
         # Print request
         print(unquote(request_line.decode('utf-8')))
         # Break down the request line into components
-        (request_method,  # GET
-         path,  # /hello
-         request_version  # HTTP/1.1
-         ) = request_line.split()
+        request_method, path, request_version = request_line.split()
 
         # If there is an 'index.html' file - display it's content
         if os.path.isfile('index.html'):
