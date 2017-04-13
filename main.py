@@ -61,12 +61,8 @@ def styles():
 
 def return_index(path='/'):
     """Returns the content of index.html, with HTTP-headers"""
-    if path == '/':
-        with open('index.html', 'rb') as f:
-            response = f.read()
-    else:
-        with open(os.path.join(path, 'index.html'), 'rb') as f:
-            response = f.read()
+    with open(os.path.join(path if path != '/' else '', 'index.html'), 'rb') as f:
+        response = f.read()
 
     response = add_headers(response)
     return response
