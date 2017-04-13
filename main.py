@@ -59,6 +59,19 @@ def add_styles(html_response):
     return html_response + styles
 
 
+def return_index(path='/'):
+    """Returns the content of index.html, with HTTP-headers"""
+    if path == '/':
+        with open('index.html', 'rb') as f:
+            response = f.read()
+    else:
+        with open(os.path.join(path, 'index.html'), 'rb') as f:
+            response = f.read()
+
+    response = add_headers(response)
+    return response
+
+
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
     listen_socket = open_socket()
@@ -80,10 +93,7 @@ def serve():
 
         # If there is an 'index.html' file - display it's content
         if os.path.isfile('index.html'):
-            with open('index.html', 'rb') as f:
-                response = f.read()
-
-            response = add_headers(response)
+            response = return_index()
             client_connection.sendall(response)
             client_connection.close()
             continue
@@ -106,9 +116,7 @@ def serve():
                 response = '<html><head><meta charset="UTF-8"><title>{}</title></head><body><ul>'.format('/' + new_path)
 
                 if 'index.html' in os.listdir(new_path):
-                    with open(os.path.join(new_path, 'index.html'), 'rb') as f:
-                        response = f.read()
-                    response = add_headers(response)
+                    response = return_index(new_path)
                     client_connection.sendall(response)
                     client_connection.close()
                     continue
