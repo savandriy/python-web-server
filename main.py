@@ -61,7 +61,6 @@ def add_styles(html_response):
 
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
-    os.chdir('/')
     listen_socket = open_socket()
     while True:
         client_connection, client_address = listen_socket.accept()
