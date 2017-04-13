@@ -106,6 +106,10 @@ def serve():
         print(unquote(request_line.decode('utf-8')))
         # Break down the request line into components
         request_method, path, request_version = request_line.split()
+        # Convert path to proper Unicode
+        path = convert_path(path)
+        # Delete the starting slash to work properly
+        path = path if path == '/' else path[1:]
 
         # If there is an 'index.html' file - display it's content
         if os.path.isfile('index.html'):
@@ -114,36 +118,18 @@ def serve():
             client_connection.close()
             continue
 
-        # Find needed file or directory, if '/' display list
-        if path.decode('utf-8') == '/':
-            response = '<html><head><meta charset="UTF-8"><title>{}</title></head><body><ul>'.format(path.decode('utf-8'))
-            all_dir_content = os.listdir()
-            for el in all_dir_content:
-                response += '<li><a href="{0}">{0}</a></li>'.format(el)
-            response += '</ul></body></html>'
-            response += styles()
+        if os.path.isfile(path):
+            with open(path, 'rb') as file:
+                response = file.read()
+        elif os.path.isdir(path):
+            if 'index.html' in os.listdir(path):
+                response = return_index(path)
+                client_connection.sendall(response)
+                client_connection.close()
+                continue
+            response = return_directory_html(path)
         else:
-            # Delete starting /, convert to Unicode, decode special symbols
-            new_path = unquote(path[1:].decode('utf-8'))
-            if os.path.isfile(new_path):
-                with open(new_path, 'rb') as file:
-                    response = file.read()
-            elif os.path.isdir(new_path):
-                response = '<html><head><meta charset="UTF-8"><title>{}</title></head><body><ul>'.format('/' + new_path)
-
-                if 'index.html' in os.listdir(new_path):
-                    response = return_index(new_path)
-                    client_connection.sendall(response)
-                    client_connection.close()
-                    continue
-
-                all_dir_content = os.listdir(new_path)
-                for el in all_dir_content:
-                    response += '<li><a href="{0}/{1}">{1}</a></li>'.format(new_path, el)
-                response += '</ul></body></html>'
-                response += styles()
-            else:
-                response = '<h1>Sorry, but there was some kind of error(</h1>'
+            response = '<h1>Sorry, but there was some kind of error(</h1>'
         try:
             client_connection.sendall(bytes(add_headers(response), 'utf-8'))
         except TypeError:
