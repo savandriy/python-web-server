@@ -33,6 +33,11 @@ def add_headers(response_without_headers):
         return headers.encode('utf-8') + response_without_headers
 
 
+def convert_path(path):
+    """Convert path(from request) to a readable Unicode string"""
+    return unquote(path.decode('utf-8'))
+
+
 def styles():
     """Add some styles to the HTML"""
     style = """
