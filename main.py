@@ -4,17 +4,12 @@ import sys
 import os
 
 # default value for port
-PORT = 8000
+DEFAULT_PORT = 8000
 
 
 def open_socket():
     """Creates an open listening socket"""
-    try:
-        port = sys.argv[1]
-        port = int(port)
-    except (IndexError, ValueError):
-        print('No port was specified or invalid port, using standard')
-        port = PORT
+    port = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else DEFAULT_PORT
 
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
