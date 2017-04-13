@@ -33,9 +33,9 @@ def add_headers(response_without_headers):
         return headers.encode('utf-8') + response_without_headers
 
 
-def add_styles(html_response):
+def styles():
     """Add some styles to the HTML"""
-    styles = """
+    style = """
             <style>
             body{
                 background: #000000; 
@@ -56,7 +56,7 @@ def add_styles(html_response):
             }
             </style>
         """
-    return html_response + styles
+    return style
 
 
 def return_index(path='/'):
@@ -105,7 +105,7 @@ def serve():
             for el in all_dir_content:
                 response += '<li><a href="{0}">{0}</a></li>'.format(el)
             response += '</ul></body></html>'
-            response = add_styles(response)
+            response += styles()
         else:
             # Delete starting /, convert to Unicode, decode special symbols
             new_path = unquote(path[1:].decode('utf-8'))
@@ -125,7 +125,7 @@ def serve():
                 for el in all_dir_content:
                     response += '<li><a href="{0}/{1}">{1}</a></li>'.format(new_path, el)
                 response += '</ul></body></html>'
-                response = add_styles(response)
+                response += styles()
             else:
                 response = '<h1>Sorry, but there was some kind of error(</h1>'
         try:
