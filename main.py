@@ -118,10 +118,13 @@ def serve():
             client_connection.close()
             continue
 
+        # If requested a file - send it's content
         if os.path.isfile(path):
             with open(path, 'rb') as file:
                 response = file.read()
+        # If requested a directory - send an HTML-page displaying a list of directory contents
         elif os.path.isdir(path):
+            # If there is an 'index.html' file in directory - display it's content
             if 'index.html' in os.listdir(path):
                 response = return_index_html(path)
                 client_connection.sendall(response)
@@ -130,6 +133,8 @@ def serve():
             response = return_directory_html(path)
         else:
             response = '<h1>Sorry, but there was some kind of error(</h1>'
+
+        # Send the response data
         try:
             client_connection.sendall(bytes(add_headers(response), 'utf-8'))
         except TypeError:
