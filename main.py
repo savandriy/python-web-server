@@ -64,7 +64,7 @@ def styles():
     return style
 
 
-def return_index(path='/'):
+def return_index_html(path='/'):
     """Returns the content of index.html, with HTTP-headers"""
     with open(os.path.join(path if path != '/' else '', 'index.html'), 'rb') as f:
         response = f.read()
@@ -113,7 +113,7 @@ def serve():
 
         # If there is an 'index.html' file - display it's content
         if os.path.isfile('index.html'):
-            response = return_index()
+            response = return_index_html()
             client_connection.sendall(response)
             client_connection.close()
             continue
@@ -123,7 +123,7 @@ def serve():
                 response = file.read()
         elif os.path.isdir(path):
             if 'index.html' in os.listdir(path):
-                response = return_index(path)
+                response = return_index_html(path)
                 client_connection.sendall(response)
                 client_connection.close()
                 continue
