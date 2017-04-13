@@ -73,6 +73,21 @@ def return_index(path='/'):
     return response
 
 
+def return_directory_html(path):
+    """Return an HTML-page displaying list of directory contents + styles"""
+    response = '<html><head><meta charset="UTF-8">\
+    <title>{}</title></head><body><ul>'.format(path if path == '/' else '/' + path)
+    all_dir_content = os.listdir(os.getcwd() if path == '/' else path)
+    for el in all_dir_content:
+        if path == '/':
+            response += '<li><a href="{0}">{0}</a></li>'.format(el)
+        else:
+            response += '<li><a href="{0}/{1}">{1}</a></li>'.format(path, el)
+    response += '</ul></body></html>'
+    response += styles()
+    return response
+
+
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
     listen_socket = open_socket()
