@@ -94,6 +94,18 @@ def parse_request(request_data):
     return request_line.rstrip().split()
 
 
+def send_response(client_connection, response, raw=False):
+    """Sends response to an accepted connection and closes it"""
+    if raw:
+        client_connection.sendall(response)
+    else:
+        try:
+            client_connection.sendall(bytes(add_headers(response), 'utf-8'))
+        except TypeError:
+            client_connection.sendall(add_headers(response))
+    client_connection.close()
+
+
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
     listen_socket = open_socket()
@@ -105,8 +117,7 @@ def serve():
             request_method, path, request_version = parse_request(request_data)
         except IndexError:
             response = '<h1>Sorry, but there was some kind of error(</h1>'
-            client_connection.sendall(bytes(add_headers(response), 'utf-8'))
-            client_connection.close()
+            send_response(client_connection, response)
             continue
         # Print the request line
         print(*convert_to_proper_unicode(request_method, path, request_version))
@@ -118,8 +129,7 @@ def serve():
         # If there is an 'index.html' file - display it's content
         if os.path.isfile('index.html'):
             response = return_index_html()
-            client_connection.sendall(response)
-            client_connection.close()
+            send_response(client_connection, response, raw=True)
             continue
 
         # If requested a file - send it's content
@@ -131,19 +141,14 @@ def serve():
             # If there is an 'index.html' file in directory - display it's content
             if 'index.html' in os.listdir(path):
                 response = return_index_html(path)
-                client_connection.sendall(response)
-                client_connection.close()
+                send_response(client_connection, response, raw=True)
                 continue
             response = return_directory_html(path)
         else:
             response = '<h1>Sorry, but there was some kind of error(</h1>'
 
-        # Send the response data
-        try:
-            client_connection.sendall(bytes(add_headers(response), 'utf-8'))
-        except TypeError:
-            client_connection.sendall(add_headers(response))
-        client_connection.close()
+        # Send the response data and close the connection
+        send_response(client_connection, response)
 
 if __name__ == '__main__':
     serve()
