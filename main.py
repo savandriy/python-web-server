@@ -88,24 +88,28 @@ def return_directory_html(path):
     return response
 
 
+def parse_request(request_data):
+    """Parse the request data, return the request line"""
+    request_line = request_data.splitlines()[0]
+    return request_line.rstrip().split()
+
+
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
     listen_socket = open_socket()
     while True:
         client_connection, client_address = listen_socket.accept()
         request_data = client_connection.recv(1024)
-
         # Parse the request
         try:
-            request_line = request_data.splitlines()[0]
+            request_method, path, request_version = parse_request(request_data)
         except IndexError:
-            print('Got a request with an empty body')
-
-        request_line = request_line.rstrip()
-        # Print request
-        print(convert_to_proper_unicode(request_line))
-        # Break down the request line into components
-        request_method, path, request_version = request_line.split()
+            response = '<h1>Sorry, but there was some kind of error(</h1>'
+            client_connection.sendall(bytes(add_headers(response), 'utf-8'))
+            client_connection.close()
+            continue
+        # Print the request line
+        print(request_method, path, request_version)
         # Convert path to proper Unicode
         path = convert_to_proper_unicode(path)
         # Delete the starting slash to work properly
