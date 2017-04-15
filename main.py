@@ -33,9 +33,9 @@ def add_headers(response_without_headers):
         return headers.encode('utf-8') + response_without_headers
 
 
-def convert_to_proper_unicode(text):
-    """Convert path(from request) to a readable Unicode string"""
-    return unquote(text.decode('utf-8'))
+def convert_to_proper_unicode(*args):
+    """Convert multiple byte-coded strings to readable Unicode strings"""
+    return [unquote(arg.decode('utf-8')) for arg in args]
 
 
 def styles():
@@ -109,9 +109,9 @@ def serve():
             client_connection.close()
             continue
         # Print the request line
-        print(request_method, path, request_version)
+        print(*convert_to_proper_unicode(request_method, path, request_version))
         # Convert path to proper Unicode
-        path = convert_to_proper_unicode(path)
+        path = convert_to_proper_unicode(path)[0]
         # Delete the starting slash to work properly
         path = path if path == '/' else path[1:]
 
