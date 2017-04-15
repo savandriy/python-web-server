@@ -106,6 +106,12 @@ def send_response(client_connection, response, raw=False):
     client_connection.close()
 
 
+def send_error_response(client_connection):
+    """Sends a simple response saying there was an error"""
+    response = '<h1>Sorry, but there was some kind of error(</h1>'
+    send_response(client_connection, response)
+
+
 def serve():
     """Accept HTTP-requests and return HTTP-responses"""
     listen_socket = open_socket()
@@ -116,8 +122,7 @@ def serve():
         try:
             request_method, path, request_version = parse_request(request_data)
         except IndexError:
-            response = '<h1>Sorry, but there was some kind of error(</h1>'
-            send_response(client_connection, response)
+            send_error_response(client_connection)
             continue
         # Print the request line
         print(*convert_to_proper_unicode(request_method, path, request_version))
@@ -145,7 +150,8 @@ def serve():
                 continue
             response = return_directory_html(path)
         else:
-            response = '<h1>Sorry, but there was some kind of error(</h1>'
+            send_error_response(client_connection)
+            continue
 
         # Send the response data and close the connection
         send_response(client_connection, response)
